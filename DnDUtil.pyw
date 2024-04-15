@@ -376,12 +376,12 @@ def gear_score_window():
     gear_score_current_rarity = gear_rarity_combo(gear_score_current_rarity)
 
     imgui.new_line()
-    if imgui.button("Add 2H Weapon"):
-        scored_gears.append(ScoredGear(get_2h_gearscore(gear_score_current_rarity), "2 Hander | " + gear_rarity[gear_score_current_rarity]))
+    if imgui.button("Add Two Hand Weapon"):
+        scored_gears.append(ScoredGear(get_2h_gearscore(gear_score_current_rarity), "Two Hander | " + gear_rarity[gear_score_current_rarity]))
     if imgui.button("Add Main Hand Weapon"):
-        scored_gears.append(ScoredGear(get_mainhand_gearscore(gear_score_current_rarity), "MainHand | " + gear_rarity[gear_score_current_rarity]))
+        scored_gears.append(ScoredGear(get_mainhand_gearscore(gear_score_current_rarity), "Main Hand | " + gear_rarity[gear_score_current_rarity]))
     if imgui.button("Add Off Hand Weapon"):
-        scored_gears.append(ScoredGear(get_offhand_gearscore(gear_score_current_rarity), "OffHand | " + gear_rarity[gear_score_current_rarity]))
+        scored_gears.append(ScoredGear(get_offhand_gearscore(gear_score_current_rarity), "Off Hand | " + gear_rarity[gear_score_current_rarity]))
     if imgui.button("Add 2x2 Armor"):
         scored_gears.append(ScoredGear(get_headhandsfoot_gearscore(gear_score_current_rarity), "Armor (2x2) | " + gear_rarity[gear_score_current_rarity]))
     if imgui.button("Add 2x3 Armor"):

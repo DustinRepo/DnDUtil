@@ -14,6 +14,7 @@ A utility tool written in python for calculating various things in Dark and Dark
 - Install Python (If on Windows you can install from Windows Store)
 - Install PiP (run command: `python -m ensurepip --upgrade`)
 - Run command: `pip install -r requirements.txt`
+
 Now either just run the command `python DnDUtil.pyw` or double-click `DnDUtil.pyw` to run the application
 
 ## Credits

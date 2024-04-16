@@ -6,7 +6,7 @@ A utility tool written in python for calculating various things in Dark and Dark
 
 - Physical Damage Calculator
 - Magical Damage Calculator
-- Gear Score Calcultor
+- Gear Score Calculator
 - Health Calculator
 - Action Speed Calculator
 

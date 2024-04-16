@@ -345,7 +345,7 @@ def gear_score_window():
     imgui.push_item_width(200)
 
     # Create columns to better organize this window
-    imgui.columns(2, border=True)
+    imgui.columns(2, border=False)
 
     global gear_score_selected_index
     global scored_gears

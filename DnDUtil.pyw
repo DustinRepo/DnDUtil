@@ -7,8 +7,8 @@ import math
 import array
 
 # Global variables
-hit_positions = ["Head", "Body", "Arms", "Legs", "Hands/Feet"]
-gear_rarity = ["Junk (Dark Gray)", "Poor (Gray)", "Common (White)", "Uncommon (Green)", "Rare (Blue)", "Epic (Purple)", "Legendary (Orange)", "Unique (Yellow)"]
+hit_positions: array = ["Head", "Body", "Arms", "Legs", "Hands/Feet"]
+gear_rarity: array = ["Junk (Dark Gray)", "Poor (Gray)", "Common (White)", "Uncommon (Green)", "Rare (Blue)", "Epic (Purple)", "Legendary (Orange)", "Unique (Yellow)"]
 
 phys_damage_weapon_damage: int = 0
 phys_damage_phys_power: float = 0
@@ -77,7 +77,7 @@ def main():
         # Tell imgui to start a new frame
         imgui.new_frame()
         # Get variables for creating the buttons
-        window_size = glfw.get_window_size(window)
+        window_size: tuple = glfw.get_window_size(window)
         button_width: float = window_size[0] / 5 - 10
 
         # Render stuff for application
@@ -210,10 +210,10 @@ def phys_damage_window():
     phys_damage_hit_part_selection = hit_part_combo(phys_damage_hit_part_selection)
     imgui.pop_item_width()
 
-    phys_damage_hit_part_multi = get_hit_part_multiplier(phys_damage_hit_part_selection)
-    phys_damage_phys_power_perc = phys_damage_phys_power / 100.0
-    phys_damage_target_pdr_perc = phys_damage_target_pdr / 100.0
-    phys_damage_armor_pen_perc = phys_damage_armor_pen / 100.0
+    phys_damage_hit_part_multi: float = get_hit_part_multiplier(phys_damage_hit_part_selection)
+    phys_damage_phys_power_perc: float = phys_damage_phys_power / 100.0
+    phys_damage_target_pdr_perc: float = phys_damage_target_pdr / 100.0
+    phys_damage_armor_pen_perc: float = phys_damage_armor_pen / 100.0
 
     # https://darkanddarker.wiki.spellsandguns.com/Damage_Calculation#Damage_Formula
     phys_damage: float = ( (
@@ -266,10 +266,10 @@ def magic_damage_window():
     magic_damage_hit_part_selection = hit_part_combo(magic_damage_hit_part_selection)
     imgui.pop_item_width()
 
-    magic_damage_hit_part_multi = get_hit_part_multiplier(magic_damage_hit_part_selection)
-    magic_damage_magic_power_perc = magic_damage_magic_power / 100.0
-    magic_damage_target_mdr_perc = magic_damage_target_mdr / 100.0
-    magic_damage_magic_pen_perc = magic_damage_magic_pen / 100.0
+    magic_damage_hit_part_multi: float = get_hit_part_multiplier(magic_damage_hit_part_selection)
+    magic_damage_magic_power_perc: float = magic_damage_magic_power / 100.0
+    magic_damage_target_mdr_perc: float = magic_damage_target_mdr / 100.0
+    magic_damage_magic_pen_perc: float = magic_damage_magic_pen / 100.0
 
     # https://darkanddarker.wiki.spellsandguns.com/Damage_Calculation#Damage_Formula
     magic_damage: float = ( (
@@ -442,7 +442,7 @@ def get_total_health(strength: int, vigor: int, max_health_bonus: float, added_h
 
 # https://darkanddarker.wiki.spellsandguns.com/Stats#Health_Recovery
 def get_total_health_recovery_bonus(vigor: int):
-    health_recovery_bonus = -55
+    health_recovery_bonus: int = -55
 
     while vigor > 86:
         health_recovery_bonus += 2
@@ -474,7 +474,7 @@ def get_total_health_recovery_bonus(vigor: int):
 # https://darkanddarker.wiki.spellsandguns.com/Stats#Action_Speed
 def get_total_action_speed(agility: int, dexterity: int, action_speed_bonus):
     action_speed_sum: float = agility * 0.25 + dexterity * 0.75
-    base_action_speed = -38.0
+    base_action_speed: float = -38.0
     while action_speed_sum > 50:
         base_action_speed += 0.5
         action_speed_sum -= 1
@@ -636,7 +636,8 @@ def get_utility_gearscore(rarity: int):
 
 
 def impl_glfw_init():
-    width, height = 520, 385
+    width: int = 520
+    height: int = 385
     window_name = "Dark and Darker Util"
 
     if not glfw.init():

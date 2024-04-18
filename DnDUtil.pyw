@@ -9,6 +9,7 @@ import array
 # Global variables
 hit_positions: array = ["Head", "Body", "Arms", "Legs", "Hands/Feet"]
 gear_rarity: array = ["Junk (Dark Gray)", "Poor (Gray)", "Common (White)", "Uncommon (Green)", "Rare (Blue)", "Epic (Purple)", "Legendary (Orange)", "Unique (Yellow)"]
+gbmm_tiers: dict = {"Low Gear": 299, "High Gear": sys.maxsize}
 
 phys_damage_weapon_damage: int = 0
 phys_damage_phys_power: float = 0
@@ -406,12 +407,13 @@ def gear_score_window():
     else:
         imgui.text("Selected Item Gear Score: 0")
     imgui.text("Score: {}".format(gear_score))
-    if gear_score < 200:
-        imgui.text("Bracket: Low Gear")
-    elif gear_score < 400:
-        imgui.text("Bracket: Mid Gear")
-    else:
-        imgui.text("Bracket: High Gear")
+
+    # Show gear score bracket
+    global gbmm_tiers
+    for i, (tier, tier_score) in enumerate(gbmm_tiers.items()):
+        if tier_score > gear_score:
+            imgui.text("Current bracket: " + tier)
+            break
 
 
 # https://darkanddarker.wiki.spellsandguns.com/Stats#Max_Health

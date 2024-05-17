@@ -8,8 +8,6 @@ import array
 
 # Global variables
 hit_positions: array = ["Head", "Body", "Arms", "Legs", "Hands/Feet"]
-gear_rarity: array = ["Junk (Dark Gray)", "Poor (Gray)", "Common (White)", "Uncommon (Green)", "Rare (Blue)", "Epic (Purple)", "Legendary (Orange)", "Unique (Yellow)"]
-gbmm_tiers: dict = {"Low Gear": 299, "High Gear": sys.maxsize}
 
 phys_damage_weapon_damage: int = 0
 phys_damage_phys_power: float = 0
@@ -39,27 +37,6 @@ action_speed_agility: int = 0
 action_speed_dexterity: int = 0
 action_speed_action_speed_bonus: float = 0
 
-scored_gears: array = []
-gear_score_current_rarity: int = 0
-gear_score_selected_index: int = 0
-
-
-# Create class to hold data for gear score calculator
-class ScoredGear:
-    score: int = 0
-    label: str = None
-
-    def __init__(self, score: int, label: str):
-        self.score = score
-        self.label = label
-
-    def get_score(self):
-        return self.score
-
-    def get_label(self):
-        return self.label
-
-
 def main():
     # Create window and ImGui context
     imgui.create_context()
@@ -79,7 +56,7 @@ def main():
         imgui.new_frame()
         # Get variables for creating the buttons
         window_size: tuple = glfw.get_window_size(window)
-        button_width: float = window_size[0] / 5 - 10
+        button_width: float = window_size[0] / 4 - 10
 
         # Render stuff for application
         imgui.core.set_next_window_position(0, 0)
@@ -114,13 +91,6 @@ def main():
         if imgui.button("Action Speed", button_width):
             selected = 3
         imgui.pop_style_color(3)
-        imgui.same_line()
-        imgui.push_style_color(imgui.COLOR_BUTTON, 0.7, 0.0, 1.0)
-        imgui.push_style_color(imgui.COLOR_BUTTON_HOVERED, 1.0, 0.0, 1.0)
-        imgui.push_style_color(imgui.COLOR_BUTTON_ACTIVE, 0.5, 0.0, 0.5)
-        if imgui.button("Gear Score", button_width):
-            selected = 4
-        imgui.pop_style_color(3)
 
         # Show selected window
         if selected == 0:
@@ -131,8 +101,6 @@ def main():
             health_window()
         elif selected == 3:
             action_speed_window()
-        elif selected == 4:
-            gear_score_window()
 
         # Reset imgui and render
         imgui.end()
@@ -340,82 +308,6 @@ def action_speed_window():
     imgui.text("Total Action Speed: %.2f" % action_speed)
 
 
-def gear_score_window():
-    imgui.text("Gear Score Calculator")
-    imgui.new_line()
-    imgui.push_item_width(200)
-
-    # Create columns to better organize this window
-    imgui.columns(2, border=False)
-
-    global gear_score_selected_index
-    global scored_gears
-    # Normally you need to call imgui.end_list_box() but using the 'with' keyword automatically makes it end
-    with imgui.begin_list_box("", 250, 200) as listbox:
-        if listbox.opened and scored_gears:
-            for i, gear in enumerate(scored_gears):
-                # Quick and dirty fix.
-                # ImGui list boxes do not like items having the same name as each other, and will break selection if they do
-                # So I just put the index of the item at the back (using the tag to make imgui not display it) to fix this
-                append: str = "##{}".format(i)
-                opened, is_selected = imgui.selectable(gear.get_label() + append, selected=gear_score_selected_index == i)
-                if is_selected:  # Solution to only allow one selectable to actually be selected at a time, and index of the currently selected item
-                    gear_score_selected_index = i
-
-    # Gear removal buttons
-    if imgui.button("Remove Selected") and len(scored_gears) > 0:
-        scored_gears.remove(scored_gears[gear_score_selected_index])
-        if gear_score_selected_index > 0:
-            gear_score_selected_index -= 1
-    imgui.same_line()
-    if imgui.button("Clear"):
-        gear_score_selected_index = 0
-        scored_gears.clear()
-
-    imgui.next_column()
-    global gear_score_current_rarity
-    gear_score_current_rarity = gear_rarity_combo(gear_score_current_rarity)
-
-    imgui.new_line()
-    if imgui.button("Add Two Hand Weapon"):
-        scored_gears.append(ScoredGear(get_2h_gearscore(gear_score_current_rarity), "Two Hander | " + gear_rarity[gear_score_current_rarity]))
-    if imgui.button("Add Main Hand Weapon"):
-        scored_gears.append(ScoredGear(get_mainhand_gearscore(gear_score_current_rarity), "Main Hand | " + gear_rarity[gear_score_current_rarity]))
-    if imgui.button("Add Off Hand Weapon"):
-        scored_gears.append(ScoredGear(get_offhand_gearscore(gear_score_current_rarity), "Off Hand | " + gear_rarity[gear_score_current_rarity]))
-    if imgui.button("Add 2x2 Armor"):
-        scored_gears.append(ScoredGear(get_headhandsfoot_gearscore(gear_score_current_rarity), "Armor (2x2) | " + gear_rarity[gear_score_current_rarity]))
-    if imgui.button("Add 2x3 Armor"):
-        scored_gears.append(ScoredGear(get_chestlegsback_gearscore(gear_score_current_rarity), "Armor (2x3) | " + gear_rarity[gear_score_current_rarity]))
-    if imgui.button("Add Jewelry"):
-        scored_gears.append(ScoredGear(get_accessory_gearscore(gear_score_current_rarity), "Jewelry | " + gear_rarity[gear_score_current_rarity]))
-    if imgui.button("Add Utility"):
-        scored_gears.append(ScoredGear(get_utility_gearscore(gear_score_current_rarity), "Utility | " + gear_rarity[gear_score_current_rarity]))
-    if imgui.button("Add 3x Utility"):
-        scored_gears.append(ScoredGear(get_utility_gearscore(gear_score_current_rarity) * 3, "Utility (3x) | " + gear_rarity[gear_score_current_rarity]))
-    if imgui.button("Add 2x Utility"):
-        scored_gears.append(ScoredGear(get_utility_gearscore(gear_score_current_rarity) * 2, "Utility (2x) | " + gear_rarity[gear_score_current_rarity]))
-
-    gear_score: int = 0
-    for i, gear in enumerate(scored_gears):
-        gear_score += gear.get_score()
-    # Disable columns to show score
-    imgui.columns(1, border=False)
-    imgui.new_line()
-    if len(scored_gears) > 0:
-        imgui.text("Selected Item Gear Score: {}".format(scored_gears[gear_score_selected_index].get_score()))
-    else:
-        imgui.text("Selected Item Gear Score: 0")
-    imgui.text("Score: {}".format(gear_score))
-
-    # Show gear score bracket
-    global gbmm_tiers
-    for i, (tier, tier_score) in enumerate(gbmm_tiers.items()):
-        if tier_score > gear_score:
-            imgui.text("Current bracket: " + tier)
-            break
-
-
 # https://darkanddarker.wiki.spellsandguns.com/Stats#Max_Health
 def get_total_health(strength: int, vigor: int, max_health_bonus: float, added_health: int):
     health_sum: float = strength * 0.25 + vigor * 0.75
@@ -502,139 +394,6 @@ def get_total_action_speed(agility: int, dexterity: int, action_speed_bonus):
                 base_action_speed += 3.0 * action_speed_sum
                 action_speed_sum = 0
     return base_action_speed + action_speed_bonus
-
-
-def get_2h_gearscore(rarity: int):
-    if rarity == 0:  # Junk
-        return 15
-    if rarity == 1:  # Poor
-        return 22
-    if rarity == 2:  # Common
-        return 30
-    if rarity == 3:  # Uncommon
-        return 45
-    if rarity == 4:  # Rare
-        return 60
-    if rarity == 5:  # Epic
-        return 90
-    if rarity == 6:  # Legendary
-        return 120
-    if rarity == 7:  # Unique
-        return 175
-
-
-def get_mainhand_gearscore(rarity: int):
-    if rarity == 0:  # Junk
-        return 9
-    if rarity == 1:  # Poor
-        return 13
-    if rarity == 2:  # Common
-        return 18
-    if rarity == 3:  # Uncommon
-        return 27
-    if rarity == 4:  # Rare
-        return 36
-    if rarity == 5:  # Epic
-        return 54
-    if rarity == 6:  # Legendary
-        return 72
-    if rarity == 7:  # Unique
-        return 125
-
-
-def get_offhand_gearscore(rarity: int):
-    if rarity == 0:  # Junk
-        return 7
-    if rarity == 1:  # Poor
-        return 10
-    if rarity == 2:  # Common
-        return 14
-    if rarity == 3:  # Uncommon
-        return 21
-    if rarity == 4:  # Rare
-        return 28
-    if rarity == 5:  # Epic
-        return 42
-    if rarity == 6:  # Legendary
-        return 56
-    if rarity == 7:  # Unique
-        return 100
-
-
-def get_headhandsfoot_gearscore(rarity: int):
-    if rarity == 0:  # Junk
-        return 4
-    if rarity == 1:  # Poor
-        return 6
-    if rarity == 2:  # Common
-        return 8
-    if rarity == 3:  # Uncommon
-        return 12
-    if rarity == 4:  # Rare
-        return 16
-    if rarity == 5:  # Epic
-        return 24
-    if rarity == 6:  # Legendary
-        return 32
-    if rarity == 7:  # Unique
-        return 40
-
-
-def get_chestlegsback_gearscore(rarity: int):
-    if rarity == 0:  # Junk
-        return 5
-    if rarity == 1:  # Poor
-        return 7
-    if rarity == 2:  # Common
-        return 10
-    if rarity == 3:  # Uncommon
-        return 15
-    if rarity == 4:  # Rare
-        return 20
-    if rarity == 5:  # Epic
-        return 30
-    if rarity == 6:  # Legendary
-        return 40
-    if rarity == 7:  # Unique
-        return 50
-
-
-def get_accessory_gearscore(rarity: int):
-    if rarity == 0:  # Junk
-        return 0
-    if rarity == 1:  # Poor
-        return 0
-    if rarity == 2:  # Common
-        return 0
-    if rarity == 3:  # Uncommon
-        return 9
-    if rarity == 4:  # Rare
-        return 12
-    if rarity == 5:  # Epic
-        return 18
-    if rarity == 6:  # Legendary
-        return 24
-    if rarity == 7:  # Unique
-        return 30
-
-
-def get_utility_gearscore(rarity: int):
-    if rarity == 0:  # Junk
-        return 2
-    if rarity == 1:  # Poor
-        return 3
-    if rarity == 2:  # Common
-        return 4
-    if rarity == 3:  # Uncommon
-        return 6
-    if rarity == 4:  # Rare
-        return 8
-    if rarity == 5:  # Epic
-        return 12
-    if rarity == 6:  # Legendary
-        return 16
-    if rarity == 7:  # Unique
-        return 20
 
 
 def impl_glfw_init():
